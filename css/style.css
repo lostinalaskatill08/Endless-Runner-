@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #222; /* Dark background */
+}
+
+#game-container {
+    /* The game canvas will be inserted here by Phaser */
+    border: 1px solid #fff; /* Optional: Add a border for visibility */
+}
+
+canvas {
+    /* Ensure the canvas itself doesn't add extra margins */
+    display: block;
+}
