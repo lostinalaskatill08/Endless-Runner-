@@ -23,7 +23,8 @@ class BootScene extends Phaser.Scene {
         });
         // Platform: Brown rectangle
         this.textures.generate('platform', { data: ['1'], pixelWidth: 1, pixelHeight: 1, palette: { 0: '#0000', 1: '#a0522d' } }); // Brown platform
-        // Background: Simple gradient or pattern later? For now, keep solid color in GameScene.
+        // Laser: Simple white line
+        this.textures.generate('laser', { data: ['1'], pixelWidth: 10, pixelHeight: 2, palette: { 0: '#0000', 1: '#ffffff' } }); // White laser
     }
 
     create() {
@@ -67,7 +68,44 @@ class GameScene extends Phaser.Scene {
 
         // Add keyboard input listeners
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        // Create a group for lasers
+        this.lasers = this.physics.add.group({
+            defaultKey: 'laser',
+            maxSize: 10 // Limit the number of lasers on screen
+        });
+
+        // Add mouse input listener for shooting
+        this.input.on('pointerdown', (pointer) => {
+            this.shootLaser();
+        });
     }
+
+    shootLaser() {
+        const laser = this.lasers.get(this.player.x, this.player.y);
+        if (laser) {
+            laser.setActive(true);
+            laser.setVisible(true);
+            laser.body.setAllowGravity(false); // Lasers ignore gravity
+
+            const laserSpeed = 400;
+            // Shoot in the direction the player is facing
+            if (this.player.flipX) { // Facing left
+                laser.setVelocityX(-laserSpeed);
+            } else { // Facing right
+                laser.setVelocityX(laserSpeed);
+            }
+
+            // Optional: Destroy laser after some time or distance
+            this.time.delayedCall(1000, () => {
+                if (laser.active) {
+                    this.lasers.killAndHide(laser);
+                }
+            });
+        }
+    }
+
 
     update() {
         // Player movement and basic animation (flipping)
@@ -84,10 +122,17 @@ class GameScene extends Phaser.Scene {
             // Add idle animation later
         }
 
-        // Basic jump
-        if (this.cursors.up.isDown && this.player.body.touching.down) {
-            this.player.setVelocityY(-300); // Slightly stronger jump
+        // Jump - Allow Up arrow or Spacebar
+        if ((this.cursors.up.isDown || this.spacebar.isDown) && this.player.body.touching.down) {
+            this.player.setVelocityY(-300);
         }
+
+        // Optional: Clean up lasers that go off-screen (if not using timed kill)
+        this.lasers.children.each(laser => {
+            if (laser.active && (laser.x < 0 || laser.x > this.physics.world.bounds.width)) {
+                this.lasers.killAndHide(laser);
+            }
+        });
     }
 }
 
