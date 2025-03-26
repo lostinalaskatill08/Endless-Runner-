@@ -23,8 +23,8 @@ class BootScene extends Phaser.Scene {
         });
         // Platform: Brown rectangle
         this.textures.generate('platform', { data: ['1'], pixelWidth: 1, pixelHeight: 1, palette: { 0: '#0000', 1: '#a0522d' } }); // Brown platform
-        // Laser: Simple white line
-        this.textures.generate('laser', { data: ['1'], pixelWidth: 10, pixelHeight: 2, palette: { 0: '#0000', 1: '#ffffff' } }); // White laser
+        // Laser: Simple red line
+        this.textures.generate('laser', { data: ['1'], pixelWidth: 10, pixelHeight: 2, palette: { 0: '#0000', 1: '#ff0000' } }); // Red laser
     }
 
     create() {
@@ -122,9 +122,9 @@ class GameScene extends Phaser.Scene {
             // Add idle animation later
         }
 
-        // Jump - Allow Up arrow or Spacebar
+        // Jump - Allow Up arrow or Spacebar (Re-checking logic)
         if ((this.cursors.up.isDown || this.spacebar.isDown) && this.player.body.touching.down) {
-            this.player.setVelocityY(-300);
+            this.player.setVelocityY(-300); // Apply upward velocity for jump
         }
 
         // Optional: Clean up lasers that go off-screen (if not using timed kill)
